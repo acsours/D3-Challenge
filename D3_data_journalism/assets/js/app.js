@@ -48,7 +48,27 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     var healthcareArray=censusData.map(one_element=>one_element.healthcare=+one_element.healthcare)
     // console.log('healthcare array')
     // console.log(healthcareArray)
+    var stateCodes=censusData.map(one_element=>one_element.abbr)
+    console.log(stateCodes)
     // create scales
+    var yScale=d3.scaleLinear()
+                    .domain([0, d3.max(healthcareArray)])
+                    .range([chartHeight, 0])
+
+    var xScale=d3.scaleLinear()
+                    .domain([0, d3.max(ageArray)]) //change to a greater min?
+                    .range([0, chartWidth])
+
     // create axes using scales
+    var yAxis = d3.axisLeft(yScale);
+    var xAxis = d3.axisBottom(xScale);
+
+    chartGroup.append("g")
+        .attr("transform", `translate(0, ${chartHeight})`)
+        .call(xAxis);
+
+    chartGroup.append("g")
+        .call(yAxis);
+    
     // append a circle to the svg for each datapoint
 });
