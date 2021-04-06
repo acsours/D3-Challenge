@@ -48,15 +48,17 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     var healthcareArray=censusData.map(one_element=>one_element.healthcare=+one_element.healthcare)
     // console.log('healthcare array')
     // console.log(healthcareArray)
+
+    // console.log(censusData);
     var stateCodes=censusData.map(one_element=>one_element.abbr)
-    console.log(stateCodes)
+    console.log(stateCodes);
     // create scales
     var yScale=d3.scaleLinear()
                     .domain([0, d3.max(healthcareArray)])
                     .range([chartHeight, 0])
 
     var xScale=d3.scaleLinear()
-                    .domain([0, d3.max(ageArray)]) //change to a greater min?
+                    .domain([20, d3.max(ageArray)]) //change to a greater min?
                     .range([0, chartWidth])
 
     // create axes using scales
@@ -71,4 +73,25 @@ d3.csv("assets/data/data.csv").then(censusData=>{
         .call(yAxis);
     
     // append a circle to the svg for each datapoint
+    //circles have:
+        //cx -> age
+        //cy -> healthcare
+        //r
+        //data(?)
+    chartGroup.selectAll("circle")
+            .data(censusData)
+            .enter()
+            // .append('g')
+            .append('circle')
+            .classed('stateCircle', true)
+            .attr('cx', d=>xScale(d.age))
+            .attr('cy', d=>yScale(d.healthcare))
+            .attr('r', 10)
+            .append("text")
+            .classed('stateText',true)
+            .text(d=>d.abbr)
+            .attr('x', d=>xScale(d.age))
+            .attr('y', d=>yScale(d.healthcare))
+            // .attr('fill', 'white')
+            
 });
