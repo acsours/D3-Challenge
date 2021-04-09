@@ -42,10 +42,24 @@ var chartGroup = svg.append('g')
 d3.csv("assets/data/data.csv").then(censusData=>{
     // console.log(censusData);
     // map age to an array, parseint
-    var ageArray=censusData.map(one_element=>one_element.age=+one_element.age)
+    // var ageArray=censusData.map(one_element=>one_element.age=+one_element.age)
+    censusData.forEach(function(data) {
+        data.age = +data.age;
+        // data.ageMoe = +data.ageMoe;
+        data.poverty = +data.poverty;
+        // data.povertyMoe = +data.povertyMoe;
+        // data.ageMoe = +data.ageMoe;
+        data.income = +data.income;
+        // data.incomeMoe= +data.incomeMoe;
+        data.healthcare = +data.healthcare;
+        // data.healthcareMoe = + data.healthcareMoe;
+        data.obesity = +data.obesity;
+        data.smokes = +data.smokes;
+    })
+    console.log(censusData)
     // console.log("age array:")
     // console.log(ageArray);
-    var healthcareArray=censusData.map(one_element=>one_element.healthcare=+one_element.healthcare)
+    // var healthcareArray=censusData.map(one_element=>one_element.healthcare=+one_element.healthcare)
     // console.log('healthcare array')
     // console.log(healthcareArray)
 
@@ -54,11 +68,11 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     console.log(stateCodes);
     // create scales
     var yScale=d3.scaleLinear()
-                    .domain([0, d3.max(healthcareArray)])
+                    .domain([0, d3.max(censusData, d => d.healthcare)])
                     .range([chartHeight, 0])
 
     var xScale=d3.scaleLinear()
-                    .domain([20, d3.max(ageArray)]) //change to a greater min?
+                    .domain([20, d3.max(censusData, d=> d.age)]) //change to a greater min?
                     .range([0, chartWidth])
 
     // create axes using scales
@@ -77,7 +91,8 @@ d3.csv("assets/data/data.csv").then(censusData=>{
         //cx -> age
         //cy -> healthcare
         //r
-        //data(?)
+        //data
+        // how to put text in an element? this one does not show up
     chartGroup.selectAll("circle")
             .data(censusData)
             .enter()
@@ -87,11 +102,41 @@ d3.csv("assets/data/data.csv").then(censusData=>{
             .attr('cx', d=>xScale(d.age))
             .attr('cy', d=>yScale(d.healthcare))
             .attr('r', 10)
-            .append("text")
-            .classed('stateText',true)
-            .text(d=>d.abbr)
-            .attr('x', d=>xScale(d.age))
-            .attr('y', d=>yScale(d.healthcare))
-            // .attr('fill', 'white')
-            
+
+    chartGroup.selectAll(".stateText")
+        .data(censusData)
+        .enter()
+        // .append('g')
+        .append('text')
+        .text(d=>d.abbr)
+        .classed('stateText', true)
+        .attr('x', d=>xScale(d.age))
+        .attr('y', d=>yScale(d.healthcare))
+
+    // create axes labels
+    chartGroup.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - (margin.left +5))
+      .attr("x", 0 - (chartHeight / 2))
+      .attr("dy", "1em")
+      .attr("padding", 0.1)
+      .attr("class", "axisText")
+      .text("% with no healthcare");
+
+    chartGroup.append("text")
+      .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.bottom})`)
+      .attr("class", "axisText")
+      .text("Age");
+// trying out putting text in an eelemnt
+    // var elem = svg.selectAll("g")
+    //               .data(censusData)
+    // var elemEnter = elem.enter()
+    //                     .append("g")
+    //                     .attr("transform", d=>"translate("+d.age+","+d.healthcare))
+    // var circle = elemEnter.append("circle")
+    //                       .classed('stateCircle', true)
+    //                       .attr('cx', d=>xScale(d.age))
+    //                       .attr('cy', d=>yScale(d.healthcare))
+    //                       .attr('r', 10)
+                        
 });
