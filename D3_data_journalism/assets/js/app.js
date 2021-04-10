@@ -9,15 +9,16 @@
 // append a circle to the svg for each datapoint
 
 //create variables for SVG chart dimensions for easy use
-var svgHeight=680
-var svgWidth=720
+var svgHeight=600 //500
+var svgWidth= 1000//720 //1000
+//could 
 
 // create margin variable for easy reference
 var margin = {
-    top: 30, 
-    right: 30,
-    bottom: 30,
-    left: 30
+    top: 20, 
+    right: 40,
+    bottom: 80,
+    left: 100
 };
 
 // find chartsize using above ref
@@ -33,6 +34,7 @@ var svg = d3.select("#scatter")
             .append("svg")
             .attr("height", svgHeight)
             .attr("width", svgWidth)
+            .attr("class", "chart")
 
 // create chart group for easy formatting all at once
 var chartGroup = svg.append('g')
@@ -46,15 +48,15 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     censusData.forEach(function(data) {
         data.age = +data.age;
         // data.ageMoe = +data.ageMoe;
-        data.poverty = +data.poverty;
-        // data.povertyMoe = +data.povertyMoe;
-        // data.ageMoe = +data.ageMoe;
-        data.income = +data.income;
+        // data.poverty = +data.poverty;
+        // // data.povertyMoe = +data.povertyMoe;
+        // // data.ageMoe = +data.ageMoe;
+        // data.income = +data.income;
         // data.incomeMoe= +data.incomeMoe;
         data.healthcare = +data.healthcare;
         // data.healthcareMoe = + data.healthcareMoe;
-        data.obesity = +data.obesity;
-        data.smokes = +data.smokes;
+        // data.obesity = +data.obesity;
+        // data.smokes = +data.smokes;
     })
     console.log(censusData)
     // console.log("age array:")
@@ -64,15 +66,15 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     // console.log(healthcareArray)
 
     // console.log(censusData);
-    var stateCodes=censusData.map(one_element=>one_element.abbr)
-    console.log(stateCodes);
+    // var stateCodes=censusData.map(one_element=>one_element.abbr)
+    // console.log(stateCodes);
     // create scales
     var yScale=d3.scaleLinear()
-                    .domain([0, d3.max(censusData, d => d.healthcare)])
+                    .domain([3, d3.max(censusData, d => d.healthcare)])
                     .range([chartHeight, 0])
 
     var xScale=d3.scaleLinear()
-                    .domain([20, d3.max(censusData, d=> d.age)]) //change to a greater min?
+                    .domain([28, d3.max(censusData, d=> d.age)]) //change to a greater min?
                     .range([0, chartWidth])
 
     // create axes using scales
@@ -93,50 +95,90 @@ d3.csv("assets/data/data.csv").then(censusData=>{
         //r
         //data
         // how to put text in an element? this one does not show up
-    chartGroup.selectAll("circle")
-            .data(censusData)
-            .enter()
-            // .append('g')
-            .append('circle')
-            .classed('stateCircle', true)
-            .attr('cx', d=>xScale(d.age))
-            .attr('cy', d=>yScale(d.healthcare))
-            .attr('r', 10)
+    // var circleGroup=chartGroup.selectAll("null")
+    //                 .data(censusData)
+    //                 .enter()
+    //                 // .append('g')
+    //                 .append('circle')
+    //                 .classed('stateCircle', true)
+    //                 .attr('cx', d=>xScale(d.age))
+    //                 .attr('cy', d=>yScale(d.healthcare))
+    //                 .attr('r', 15)
+    var circleGroup = chartGroup.selectAll("null")
+                        .data(censusData)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", d => xScale(d.age))
+                        .attr("cy", d => yScale(d.healthcare))
+                        .attr("r", "20")
+                        .attr("fill", "blue")      
+                        .attr("class", "stateCircle");    
 
-    chartGroup.selectAll(".stateText")
+    // chartGroup.selectAll(".stateText")
+    //     .data(censusData)
+    //     .enter()
+    //     // .append('g')
+    //     .append('text')
+    //     .text(d=>d.abbr)
+    //     .classed('stateText', true)
+    //     .attr('x', d=>xScale(d.age))
+    //     .attr('y', d=>yScale(d.healthcare))
+
+    var stateAbbr = chartGroup.selectAll(null)
         .data(censusData)
         .enter()
-        // .append('g')
-        .append('text')
-        .text(d=>d.abbr)
-        .classed('stateText', true)
-        .attr('x', d=>xScale(d.age))
-        .attr('y', d=>yScale(d.healthcare))
+        .append("text");
+
+    stateAbbr
+        .attr("x", function (d) {
+        return xScale(d.age);
+        })
+        .attr("y", function (d) {
+        return yScale(d.healthcare) + 4
+        })
+        .text(function (d) {
+        return d.abbr;
+        })
+        .attr("class", "stateText")
+        .attr("font-size", "9px");
+
 
     // create axes labels
     chartGroup.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - (margin.left +5))
-      .attr("x", 0 - (chartHeight / 2))
+      .attr("y", 0 - (margin.left)+40)
+      .attr("x", 0 - (svgHeight / 2))
       .attr("dy", "1em")
       .attr("padding", 0.1)
       .attr("class", "axisText")
       .text("% with no healthcare");
 
     chartGroup.append("text")
-      .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.bottom})`)
+      .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.bottom-30})`)
       .attr("class", "axisText")
       .text("Age");
-// trying out putting text in an eelemnt
-    // var elem = svg.selectAll("g")
-    //               .data(censusData)
-    // var elemEnter = elem.enter()
-    //                     .append("g")
-    //                     .attr("transform", d=>"translate("+d.age+","+d.healthcare))
-    // var circle = elemEnter.append("circle")
-    //                       .classed('stateCircle', true)
-    //                       .attr('cx', d=>xScale(d.age))
-    //                       .attr('cy', d=>yScale(d.healthcare))
-    //                       .attr('r', 10)
+
+    var toolTip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([50, 70])
+      .html(function (data) {
+        var theState = "<div>" + data.state + "</div>";
+        var theX = "<div>Age: " + data.age + "%</div>";
+        var theY = "<div>Healthcare: " + data.healthcare + "%</div>";
+        //return (`${tp.state}`);
+        return theState + theX + theY;
+      });
+  
+    chartGroup.call(toolTip);
+  
+    circleGroup.on("mouseover", function (data) {
+      toolTip.show(data, this);
+    })
+      //mouseout
+      .on("mouseout", function (data) {
+        toolTip.hide(data);
+      });
                         
-});
+}).catch(function (error) {
+    console.log(error);
+  });
