@@ -160,7 +160,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circleGroup) {
   }
 
 // read csv
-d3.csv("assets/data/data.csv").then(function(censusData, err) {
+d3.csv("D3_data_journalism/assets/data/data.csv").then(function(censusData, err) {
   if (err) throw err;
     // console.log(censusData);
     // map age to an array, parseint
