@@ -147,15 +147,15 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     chartGroup.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - (margin.left)+40)
-      .attr("x", 0 - (svgHeight / 2))
+      .attr("x", 0 - (chartHeight / 2))
       .attr("dy", "1em")
       .attr("padding", 0.1)
-      .attr("class", "axisText")
-      .text("% with no healthcare");
+      .attr("class", "aText")
+      .text("Lacks Healthcare (%)");
 
     chartGroup.append("text")
       .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.bottom-30})`)
-      .attr("class", "axisText")
+      .attr("class", "aText")
       .text("Age");
 
     var toolTip = d3.tip()

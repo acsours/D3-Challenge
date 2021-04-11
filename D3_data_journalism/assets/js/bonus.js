@@ -43,7 +43,7 @@ var chartGroup = svg.append('g')
 //Initial Params
 var chosenXAxis = "poverty";
 
-var chosenYAxis = "healthcare";
+var chosenYAxis = "smokes";
 
 
 //function used for updating x-scale var upon click on axis label
@@ -51,7 +51,7 @@ function xScale(censusData, chosenXAxis) {
   //create scales
   var xLinearScale = d3.scaleLinear()
     .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
-      d3.max(censusData, d =>d[chosenXAxis]) * 1.2
+      d3.max(censusData, d =>d[chosenXAxis]) * 1.0
     ])
     .range([0, chartWidth]);
   
@@ -75,7 +75,7 @@ function yScale(censusData, chosenYAxis) {
   //create scales
   var yLinearScale = d3.scaleLinear()
     .domain([d3.min(censusData, d => d[chosenYAxis]) * 0.8,
-      d3.max(censusData, d =>d[chosenYAxis]) * 1.2
+      d3.max(censusData, d =>d[chosenYAxis]) * 1.
     ])
     .range([chartHeight,0]);
   
@@ -115,37 +115,49 @@ function renderYCircles(circleGroup, newYScale, chosenYAxis) {
 
   return circleGroup;
 }
-// //update circle group with new tooltip
-// function updateToolTip(chosenXAxis, chosenYAxis, circleGroup) {
-//   var label;
+//update circle group with new tooltip
+function updateToolTip(chosenXAxis, chosenYAxis, circleGroup) {
+  var xlabel;
 
-//   if (chosenXAxis === "age") {
-//     label = "Age:";
-//   } else if (chosenXAxis === "poverty"){
-//     label = "In Poverty (%):";
-//   } else  {
-//     label = "Household Income (Median): ";
-//   }
+  if (chosenXAxis === "age") {
+    xlabel = "Age:";
+  } else if (chosenXAxis === "poverty"){
+    xlabel = "In Poverty (%):";
+  } else  {
+    xlabel = "Household Income (Median): ";
+  }
+  var ylabel;
 
-//   var toolTip = d3.tip()
-//     .attr("class", "tooltip")
-//     .offset([80, -60])
-//     .html(function(d) {
-//       return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
-//     });
+  if (chosenYAxis === "smokes") {
+    ylabel = "Smokes (%):";
+  } else if (chosenYAxis === "obesity"){
+    ylabel = "Obesity (%):";
+  } else  {
+    ylabel = "Lacks Healthcare (%): ";
+  }
+  var toolTip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([80, -70])
+    .html(function(d) {
+      return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}<br>${ylabel} ${d[chosenYAxis]}`);
+    });
 
-//   circleGroup.call(toolTip);
+  chartGroup.call(toolTip);
 
-//   circleGroup.on("mouseover", function(data) {
-//     toolTip.show(data);
-//   })
-//     //onmouseout event
-//     .on("mouseout", function(data, index) {
-//       toolTip.hide(data);
-//     });
+  circleGroup.on("mouseover", function(data) {
+    toolTip.show(data, this);
+    // console.log(this);
+    // d3.select(this).attr({
+    //   fill: "orange",
+    // });
+  })
+    //onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
 
-//     return circleGroup;
-//   }
+    return circleGroup;
+  }
 
 // read csv
 d3.csv("assets/data/data.csv").then(function(censusData, err) {
@@ -266,7 +278,7 @@ d3.csv("assets/data/data.csv").then(function(censusData, err) {
                               .text("Lacks Healthcare (%)");
 
   //updateToolTip function above import
-  // var circleGroup = updateToolTip(chosenXAxis, circleGroup);
+  var circleGroup = updateToolTip(chosenXAxis, chosenYAxis, circleGroup);
 
   //x axis labels event listener
   xLabelsGroup.selectAll("text")
@@ -300,7 +312,7 @@ d3.csv("assets/data/data.csv").then(function(censusData, err) {
         .attr("class", "stateText")
         .attr("font-size", "9px")
         // updates tooltips with new info
-        // circleGroup = updateToolTip(chosenXAxis, circleGroup);
+        circleGroup = updateToolTip(chosenXAxis, chosenYAxis, circleGroup);
 
         // changes classes to change bold text
         if (chosenXAxis === "poverty") {
@@ -371,7 +383,7 @@ d3.csv("assets/data/data.csv").then(function(censusData, err) {
       .attr("font-size", "9px")
 
       // updates tooltips with new info
-      // circleGroup = updateToolTip(chosenYAxis, circleGroup);
+      circleGroup = updateToolTip(chosenXAxis, chosenYAxis, circleGroup);
 
       // change active label to bold text
       if (chosenYAxis === "smokes") {
