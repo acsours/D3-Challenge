@@ -1,12 +1,3 @@
-// @TODO: YOUR CODE HERE!
-// healthcare(%) vs age(median)
-// x -> age in state
-// y -> lacks healthcare(%)
-// create svg
-// create scales
-// create axes
-// save the variables to an array each
-// append a circle to the svg for each datapoint
 
 //create variables for SVG chart dimensions for easy use
 var svgHeight=600 //500
@@ -22,12 +13,9 @@ var margin = {
 };
 
 // find chartsize using above ref
-
 var chartHeight=svgHeight-margin.top-margin.bottom;
 var chartWidth=svgWidth-margin.left-margin.right;
 
-// console.log(chartHeight);
-// console.log(chartWidth);
 
 // append an svg to the html 
 var svg = d3.select("#scatter")
@@ -42,32 +30,14 @@ var chartGroup = svg.append('g')
 
 // read csv
 d3.csv("assets/data/data.csv").then(censusData=>{
-    // console.log(censusData);
-    // map age to an array, parseint
-    // var ageArray=censusData.map(one_element=>one_element.age=+one_element.age)
     censusData.forEach(function(data) {
+        //parse age and healthcare as integers
         data.age = +data.age;
-        // data.ageMoe = +data.ageMoe;
-        // data.poverty = +data.poverty;
-        // // data.povertyMoe = +data.povertyMoe;
-        // // data.ageMoe = +data.ageMoe;
-        // data.income = +data.income;
-        // data.incomeMoe= +data.incomeMoe;
         data.healthcare = +data.healthcare;
-        // data.healthcareMoe = + data.healthcareMoe;
-        // data.obesity = +data.obesity;
-        // data.smokes = +data.smokes;
+
     })
     console.log(censusData)
-    // console.log("age array:")
-    // console.log(ageArray);
-    // var healthcareArray=censusData.map(one_element=>one_element.healthcare=+one_element.healthcare)
-    // console.log('healthcare array')
-    // console.log(healthcareArray)
 
-    // console.log(censusData);
-    // var stateCodes=censusData.map(one_element=>one_element.abbr)
-    // console.log(stateCodes);
     // create scales
     var yScale=d3.scaleLinear()
                     .domain([3, d3.max(censusData, d => d.healthcare)])
@@ -81,6 +51,7 @@ d3.csv("assets/data/data.csv").then(censusData=>{
     var yAxis = d3.axisLeft(yScale);
     var xAxis = d3.axisBottom(xScale);
 
+    //append axes and call. 
     chartGroup.append("g")
         .attr("transform", `translate(0, ${chartHeight})`)
         .call(xAxis);
@@ -89,21 +60,6 @@ d3.csv("assets/data/data.csv").then(censusData=>{
         .call(yAxis);
     
     // append a circle to the svg for each datapoint
-    //circles have:
-        //cx -> age
-        //cy -> healthcare
-        //r
-        //data
-        // how to put text in an element? this one does not show up
-    // var circleGroup=chartGroup.selectAll("null")
-    //                 .data(censusData)
-    //                 .enter()
-    //                 // .append('g')
-    //                 .append('circle')
-    //                 .classed('stateCircle', true)
-    //                 .attr('cx', d=>xScale(d.age))
-    //                 .attr('cy', d=>yScale(d.healthcare))
-    //                 .attr('r', 15)
     var circleGroup = chartGroup.selectAll("null")
                         .data(censusData)
                         .enter()
@@ -114,16 +70,7 @@ d3.csv("assets/data/data.csv").then(censusData=>{
                         .attr("fill", "blue")      
                         .attr("class", "stateCircle");    
 
-    // chartGroup.selectAll(".stateText")
-    //     .data(censusData)
-    //     .enter()
-    //     // .append('g')
-    //     .append('text')
-    //     .text(d=>d.abbr)
-    //     .classed('stateText', true)
-    //     .attr('x', d=>xScale(d.age))
-    //     .attr('y', d=>yScale(d.healthcare))
-
+    //append text to the svg (not circles)
     var stateAbbr = chartGroup.selectAll(null)
         .data(censusData)
         .enter()
@@ -158,6 +105,7 @@ d3.csv("assets/data/data.csv").then(censusData=>{
       .attr("class", "aText")
       .text("Age");
 
+    // create tool cip
     var toolTip = d3.tip()
       .attr("class", "d3-tip")
       .offset([50, 70])
@@ -171,6 +119,7 @@ d3.csv("assets/data/data.csv").then(censusData=>{
   
     chartGroup.call(toolTip);
   
+    //apply mouseover event and mouseout event to data for tooltip.
     circleGroup.on("mouseover", function (data) {
       toolTip.show(data, this);
     })
